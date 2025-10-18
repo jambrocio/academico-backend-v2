@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.university.dto.CarreraDto;
 import pe.edu.university.entity.Carrera;
+import pe.edu.university.entity.Facultad;
 import pe.edu.university.exception.ResourceNotFoundException;
 import pe.edu.university.mapper.CarreraMapper;
 import pe.edu.university.repository.CarreraRepository;
+import pe.edu.university.repository.FacultadRepository;
 import pe.edu.university.service.CarreraService;
 
 import java.util.List;
@@ -25,9 +27,20 @@ public class CarreraServiceImpl implements CarreraService {
     @Autowired
     CarreraMapper mapper;
 
+    @Autowired
+    FacultadRepository facultadRepository; // nuevo
+
     @Override
     public CarreraDto create(CarreraDto dto) {
         Carrera e = mapper.toEntity(dto);
+
+        // Asignar Facultad si se proporcionó facultadId
+        if (dto.getFacultadId() != null) {
+            Facultad facultad = facultadRepository.findById(dto.getFacultadId())
+                .orElseThrow(() -> new IllegalArgumentException("Facultad no encontrada: " + dto.getFacultadId()));
+            e.setFacultad(facultad);
+        }
+
         Carrera saved = repository.save(e);
         return mapper.toDto(saved);
     }

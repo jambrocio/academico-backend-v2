@@ -6,9 +6,11 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.university.dto.CursoDto;
 import pe.edu.university.entity.Curso;
+import pe.edu.university.entity.Carrera;
 import pe.edu.university.exception.ResourceNotFoundException;
 import pe.edu.university.mapper.CursoMapper;
 import pe.edu.university.repository.CursoRepository;
+import pe.edu.university.repository.CarreraRepository;
 import pe.edu.university.service.CursoService;
 
 import java.util.List;
@@ -25,19 +27,37 @@ public class CursoServiceImpl implements CursoService {
     @Autowired
     CursoMapper mapper;
 
+    @Autowired
+    CarreraRepository carreraRepository; // nuevo
+
     @Override
     public CursoDto create(CursoDto dto) {
-        Curso e = mapper.toEntity(dto);
-        Curso saved = repository.save(e);
+        Curso entity = mapper.toEntity(dto);
+
+        if (dto.getCarreraId() != null) {
+            Carrera carrera = carreraRepository.findById(dto.getCarreraId())
+                .orElseThrow(() -> new IllegalArgumentException("Carrera no encontrada: " + dto.getCarreraId()));
+            entity.setCarrera(carrera);
+        }
+
+        Curso saved = repository.save(entity);
         return mapper.toDto(saved);
     }
 
     @Override
     public CursoDto update(Long id, CursoDto dto) {
-        Curso existing = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Curso no encontrado: " + id));
-        // simple field updates (mapper could be more advanced)
-        Curso updated = repository.save(existing);
-        return mapper.toDto(updated);
+        Curso entity = repository.findById(id)
+            .orElseThrow(() -> new IllegalArgumentException("Curso no encontrado: " + id));
+        mapper.updateEntity(dto, entity);
+
+        if (dto.getCarreraId() != null) {
+            Carrera carrera = carreraRepository.findById(dto.getCarreraId())
+                .orElseThrow(() -> new IllegalArgumentException("Carrera no encontrada: " + dto.getCarreraId()));
+            entity.setCarrera(carrera);
+        }
+
+        Curso saved = repository.save(entity);
+        return mapper.toDto(saved);
     }
 
     @Override
