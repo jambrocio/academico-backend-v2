@@ -1,6 +1,7 @@
 package pe.edu.university.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.university.dto.PrerrequisitoDto;
@@ -18,8 +19,11 @@ import java.util.stream.Collectors;
 @Transactional
 public class PrerrequisitoServiceImpl implements PrerrequisitoService {
 
-    private final PrerrequisitoRepository repository;
-    private final PrerrequisitoMapper mapper;
+    @Autowired
+    PrerrequisitoRepository repository;
+
+    @Autowired
+    PrerrequisitoMapper mapper;
 
     @Override
     public PrerrequisitoDto create(PrerrequisitoDto dto) {

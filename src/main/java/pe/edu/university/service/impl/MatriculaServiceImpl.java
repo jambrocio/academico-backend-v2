@@ -1,6 +1,7 @@
 package pe.edu.university.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.university.dto.MatriculaDto;
@@ -18,8 +19,11 @@ import java.util.stream.Collectors;
 @Transactional
 public class MatriculaServiceImpl implements MatriculaService {
 
-    private final MatriculaRepository repository;
-    private final MatriculaMapper mapper;
+    @Autowired
+    MatriculaRepository repository;
+
+    @Autowired
+    MatriculaMapper mapper;
 
     @Override
     public MatriculaDto create(MatriculaDto dto) {

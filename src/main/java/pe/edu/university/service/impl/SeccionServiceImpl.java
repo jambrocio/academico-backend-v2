@@ -1,6 +1,7 @@
 package pe.edu.university.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.university.dto.SeccionDto;
@@ -18,8 +19,11 @@ import java.util.stream.Collectors;
 @Transactional
 public class SeccionServiceImpl implements SeccionService {
 
-    private final SeccionRepository repository;
-    private final SeccionMapper mapper;
+    @Autowired
+    SeccionRepository repository;
+
+    @Autowired
+    SeccionMapper mapper;
 
     @Override
     public SeccionDto create(SeccionDto dto) {

@@ -1,6 +1,7 @@
 package pe.edu.university.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.university.dto.PagoDto;
@@ -18,8 +19,11 @@ import java.util.stream.Collectors;
 @Transactional
 public class PagoServiceImpl implements PagoService {
 
-    private final PagoRepository repository;
-    private final PagoMapper mapper;
+    @Autowired
+    PagoRepository repository;
+
+    @Autowired
+    PagoMapper mapper;
 
     @Override
     public PagoDto create(PagoDto dto) {

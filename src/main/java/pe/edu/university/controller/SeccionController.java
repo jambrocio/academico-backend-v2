@@ -1,6 +1,7 @@
 package pe.edu.university.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.university.dto.SeccionDto;
@@ -13,7 +14,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class SeccionController {
 
-    private final SeccionService service;
+    @Autowired
+    SeccionService service;
 
     @PostMapping
     public ResponseEntity<SeccionDto> create(@RequestBody SeccionDto dto) {

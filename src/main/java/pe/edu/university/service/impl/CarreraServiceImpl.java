@@ -1,6 +1,7 @@
 package pe.edu.university.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.university.dto.CarreraDto;
@@ -18,8 +19,11 @@ import java.util.stream.Collectors;
 @Transactional
 public class CarreraServiceImpl implements CarreraService {
 
-    private final CarreraRepository repository;
-    private final CarreraMapper mapper;
+    @Autowired
+    CarreraRepository repository;
+
+    @Autowired
+    CarreraMapper mapper;
 
     @Override
     public CarreraDto create(CarreraDto dto) {

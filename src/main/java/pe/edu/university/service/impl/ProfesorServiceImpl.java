@@ -1,6 +1,7 @@
 package pe.edu.university.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.university.dto.ProfesorDto;
@@ -18,8 +19,11 @@ import java.util.stream.Collectors;
 @Transactional
 public class ProfesorServiceImpl implements ProfesorService {
 
-    private final ProfesorRepository repository;
-    private final ProfesorMapper mapper;
+    @Autowired
+    ProfesorRepository repository;
+
+    @Autowired
+    ProfesorMapper mapper;
 
     @Override
     public ProfesorDto create(ProfesorDto dto) {

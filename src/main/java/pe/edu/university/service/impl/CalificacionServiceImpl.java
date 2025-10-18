@@ -1,6 +1,7 @@
 package pe.edu.university.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.university.dto.CalificacionDto;
@@ -18,8 +19,9 @@ import java.util.stream.Collectors;
 @Transactional
 public class CalificacionServiceImpl implements CalificacionService {
 
-    private final CalificacionRepository repository;
-    private final CalificacionMapper mapper;
+    @Autowired
+    CalificacionRepository repository;
+    CalificacionMapper mapper;
 
     @Override
     public CalificacionDto create(CalificacionDto dto) {

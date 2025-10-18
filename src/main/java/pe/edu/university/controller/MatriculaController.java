@@ -1,6 +1,7 @@
 package pe.edu.university.controller;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.university.dto.MatriculaDto;
@@ -13,7 +14,8 @@ import java.util.List;
 @RequiredArgsConstructor
 public class MatriculaController {
 
-    private final MatriculaService service;
+    @Autowired
+    MatriculaService service;
 
     @PostMapping
     public ResponseEntity<MatriculaDto> create(@RequestBody MatriculaDto dto) {

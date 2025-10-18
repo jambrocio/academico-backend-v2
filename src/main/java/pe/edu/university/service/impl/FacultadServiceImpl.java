@@ -1,6 +1,7 @@
 package pe.edu.university.service.impl;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import pe.edu.university.dto.FacultadDto;
@@ -18,8 +19,11 @@ import java.util.stream.Collectors;
 @Transactional
 public class FacultadServiceImpl implements FacultadService {
 
-    private final FacultadRepository facultadRepository;
-    private final FacultadMapper mapper;
+    @Autowired
+    FacultadRepository facultadRepository;
+
+    @Autowired
+    FacultadMapper mapper;
 
     @Override
     public FacultadDto create(FacultadDto dto) {
