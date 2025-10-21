@@ -9,12 +9,4 @@ public class CursoDto {
     private String nombre;
     private Integer creditos;
     private Integer nivelSemestre;
-
-    public Long getCarreraId() {
-        return carreraId;
-    }
-
-    public void setCarreraId(Long carreraId) {
-        this.carreraId = carreraId;
-    }
 }
