@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.university.dto.FacultadDto;
+import pe.edu.university.security.ValidateToken;
 import pe.edu.university.service.FacultadService;
 
 import java.util.List;
@@ -33,6 +34,7 @@ public class FacultadController {
     }
 
     @GetMapping
+    @ValidateToken
     public ResponseEntity<List<FacultadDto>> getAll() {
         return ResponseEntity.ok(service.findAll());
     }
