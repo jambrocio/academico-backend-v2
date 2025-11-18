@@ -3,7 +3,6 @@ package pe.edu.university.entity;
 import jakarta.persistence.*;
 import lombok.*;
 import java.time.*;
-import java.util.List;
 
 @Entity
 @Table(name = "seccion")

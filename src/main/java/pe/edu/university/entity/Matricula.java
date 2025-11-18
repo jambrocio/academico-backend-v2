@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import java.math.BigDecimal;
 import java.time.*;
-import java.util.List;
 
 @Entity
 @Table(name = "matricula")

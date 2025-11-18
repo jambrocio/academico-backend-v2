@@ -3,6 +3,8 @@ package pe.edu.university.mapper;
 import org.springframework.stereotype.Component;
 import pe.edu.university.dto.MatriculaDto;
 import pe.edu.university.entity.Matricula;
+import pe.edu.university.entity.Estudiante;
+import pe.edu.university.entity.Seccion;
 
 @Component
 public class MatriculaMapper {
@@ -35,6 +37,20 @@ public class MatriculaMapper {
         e.setEstado(d.getEstado());
         e.setCosto(d.getCosto());
         e.setMetodoPago(d.getMetodoPago());
+        // also set FK id fields directly to ensure DB columns are written
+        e.setEstudianteId(d.getEstudianteId());
+        e.setSeccionId(d.getSeccionId());
+        // assign relation objects so JPA will persist FK columns
+        if(d.getEstudianteId()!=null){
+            Estudiante est = new Estudiante();
+            est.setEstudianteId(d.getEstudianteId());
+            e.setEstudiante(est);
+        }
+        if(d.getSeccionId()!=null){
+            Seccion sec = new Seccion();
+            sec.setSeccionId(d.getSeccionId());
+            e.setSeccion(sec);
+        }
         return e;
     }
 }
