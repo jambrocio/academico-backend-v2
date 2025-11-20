@@ -65,10 +65,10 @@ public class MatriculaServiceImpl implements MatriculaService {
         MatriculaDto resultDto = mapper.toDto(saved, estudiante);
 
         // send notification to external service (graceful degradation on failure)
+        externalMessageService.sendMatriculaMessageKafkaCreate(resultDto);
+
         externalMessageService.sendMatriculaMessageRabbitMq(resultDto);
 
-        externalMessageService.sendMatriculaMessageKafkaCreate(resultDto);
-        
         return resultDto;
     }
 
