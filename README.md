@@ -16,6 +16,9 @@ mvn spring-boot:run
 o
 java -jar target/academico-backend-<version>.jar
 
+## Ejecutar con docker
+docker-compose up -d
+
 ## OpenAPI / Swagger (Springdoc)
 - OpenAPI JSON: http://localhost:8080/v3/api-docs
 - OpenAPI YAML: http://localhost:8080/v3/api-docs.yaml
