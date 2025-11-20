@@ -10,10 +10,11 @@ public class MatriculaDto {
     private String estado;
     private BigDecimal costo;
     private String metodoPago;
-    private OffsetDateTime fechaRegistro;
+    private LocalDateTime fechaRegistro;
 
     private Long estudianteId;
     private String nombreEstudiante;
+    private String correoEstudiante;
 
     private Long seccionId;
     private String codigoSeccion;

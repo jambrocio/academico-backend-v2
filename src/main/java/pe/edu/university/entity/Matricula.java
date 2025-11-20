@@ -5,6 +5,8 @@ import lombok.*;
 import java.math.BigDecimal;
 import java.time.*;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
+
 @Entity
 @Table(name = "matricula")
 @Data
@@ -21,13 +23,17 @@ public class Matricula {
     @Column(name = "seccion_id", insertable = false, updatable = false)
     private Long seccionId;
 
+    @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaMatricula;
+    
     private String estado;
     private BigDecimal costo;
     private String metodoPago;
-    private OffsetDateTime fechaRegistro;
 
-    @PrePersist public void prePersist(){ if(fechaMatricula==null) fechaMatricula=LocalDate.now(); if(fechaRegistro==null) fechaRegistro=OffsetDateTime.now(); if(estado==null) estado="PENDIENTE"; }
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
+    private LocalDateTime fechaRegistro;
+
+    @PrePersist public void prePersist(){ if(fechaMatricula==null) fechaMatricula=LocalDate.now(); if(fechaRegistro==null) fechaRegistro=LocalDateTime.now(); if(estado==null) estado="PENDIENTE"; }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "estudiante_id", nullable = false)

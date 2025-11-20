@@ -5,6 +5,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import pe.edu.university.dto.MatriculaDto;
+import pe.edu.university.security.ValidateToken;
 import pe.edu.university.service.MatriculaService;
 
 import java.util.List;
@@ -18,6 +19,7 @@ public class MatriculaController {
     MatriculaService service;
 
     @PostMapping
+    @ValidateToken
     public ResponseEntity<MatriculaDto> create(@RequestBody MatriculaDto dto) {
         return ResponseEntity.ok(service.create(dto));
     }

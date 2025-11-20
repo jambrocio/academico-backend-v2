@@ -21,6 +21,7 @@ public class MatriculaMapper {
         if(e.getEstudiante()!=null){
             d.setEstudianteId(e.getEstudiante().getEstudianteId());
             d.setNombreEstudiante(e.getEstudiante().getNombre()+" "+e.getEstudiante().getApellido());
+            d.setCorreoEstudiante(e.getEstudiante().getEmail());
         }
         if(e.getSeccion()!=null){
             d.setSeccionId(e.getSeccion().getSeccionId());
@@ -30,6 +31,36 @@ public class MatriculaMapper {
         }
         return d;
     }
+
+    public MatriculaDto toDto(Matricula e, Estudiante estudiante){
+        if(e==null) return null;
+        MatriculaDto d = MatriculaDto.builder()
+                .matriculaId(e.getMatriculaId())
+                .fechaMatricula(e.getFechaMatricula())
+                .estado(e.getEstado())
+                .costo(e.getCosto())
+                .metodoPago(e.getMetodoPago())
+                .fechaRegistro(e.getFechaRegistro())
+                .build();
+        // use provided Estudiante param if available
+        if(estudiante!=null){
+            d.setEstudianteId(estudiante.getEstudianteId());
+            d.setNombreEstudiante(estudiante.getNombre()+" "+estudiante.getApellido());
+            d.setCorreoEstudiante(estudiante.getEmail());
+        } else if(e.getEstudiante()!=null){
+            d.setEstudianteId(e.getEstudiante().getEstudianteId());
+            d.setNombreEstudiante(e.getEstudiante().getNombre()+" "+e.getEstudiante().getApellido());
+            d.setCorreoEstudiante(e.getEstudiante().getEmail());
+        }
+        if(e.getSeccion()!=null){
+            d.setSeccionId(e.getSeccion().getSeccionId());
+            d.setCodigoSeccion(e.getSeccion().getCodigo());
+            if(e.getSeccion().getCurso()!=null) d.setNombreCurso(e.getSeccion().getCurso().getNombre());
+            if(e.getSeccion().getProfesor()!=null) d.setNombreProfesor(e.getSeccion().getProfesor().getNombre()+" "+e.getSeccion().getProfesor().getApellido());
+        }
+        return d;
+    }
+
     public Matricula toEntity(MatriculaDto d){
         if(d==null) return null;
         Matricula e = new Matricula();

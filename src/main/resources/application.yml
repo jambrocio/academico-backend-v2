@@ -18,3 +18,9 @@ server:
 token:
   validation:
     url: http://localhost:8082/users/validate-token
+
+services:
+  rabbitmq:
+    url: http://localhost:9100/send-message
+  kafka:
+    url: http://localhost:8089/api/matricula/events
