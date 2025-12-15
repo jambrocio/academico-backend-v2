@@ -12,7 +12,8 @@ import java.time.*;
 @AllArgsConstructor
 @Builder
 public class Pago {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long pagoId;
 
     @Column(name = "matricula_id", insertable = false, updatable = false)
@@ -25,7 +26,15 @@ public class Pago {
     private String estado;
     private OffsetDateTime fechaRegistro;
 
-    @PrePersist public void prePersist(){ if(fechaPago==null) fechaPago=java.time.LocalDate.now(); if(fechaRegistro==null) fechaRegistro=OffsetDateTime.now(); if(estado==null) estado="PENDIENTE"; }
+    @PrePersist
+    public void prePersist() {
+        if (fechaPago == null)
+            fechaPago = java.time.LocalDate.now();
+        if (fechaRegistro == null)
+            fechaRegistro = OffsetDateTime.now();
+        if (estado == null)
+            estado = "PENDIENTE";
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "matricula_id", nullable = false)

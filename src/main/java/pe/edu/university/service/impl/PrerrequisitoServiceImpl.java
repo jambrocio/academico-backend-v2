@@ -1,6 +1,5 @@
 package pe.edu.university.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,20 +9,23 @@ import pe.edu.university.exception.ResourceNotFoundException;
 import pe.edu.university.mapper.PrerrequisitoMapper;
 import pe.edu.university.repository.PrerrequisitoRepository;
 import pe.edu.university.service.PrerrequisitoService;
+import pe.edu.university.util.Constantes;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class PrerrequisitoServiceImpl implements PrerrequisitoService {
 
-    @Autowired
-    PrerrequisitoRepository repository;
+    private final PrerrequisitoRepository repository;
+    private final PrerrequisitoMapper mapper;
 
     @Autowired
-    PrerrequisitoMapper mapper;
+    public PrerrequisitoServiceImpl(PrerrequisitoRepository repository, PrerrequisitoMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
 
     @Override
     public PrerrequisitoDto create(PrerrequisitoDto dto) {
@@ -34,7 +36,8 @@ public class PrerrequisitoServiceImpl implements PrerrequisitoService {
 
     @Override
     public PrerrequisitoDto update(Long id, PrerrequisitoDto dto) {
-        Prerrequisito existing = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Prerrequisito no encontrado: " + id));
+        Prerrequisito existing = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.PRE_REQUISITO_NO_ENCONTRADO + id));
         // simple field updates (mapper could be more advanced)
         Prerrequisito updated = repository.save(existing);
         return mapper.toDto(updated);
@@ -42,17 +45,19 @@ public class PrerrequisitoServiceImpl implements PrerrequisitoService {
 
     @Override
     public PrerrequisitoDto findById(Long id) {
-        return repository.findById(id).map(mapper::toDto).orElseThrow(() -> new ResourceNotFoundException("Prerrequisito no encontrado: " + id));
+        return repository.findById(id).map(mapper::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.PRE_REQUISITO_NO_ENCONTRADO + id));
     }
 
     @Override
     public List<PrerrequisitoDto> findAll() {
-        return repository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
+        return repository.findAll().stream().map(mapper::toDto).toList();
     }
 
     @Override
     public void delete(Long id) {
-        Prerrequisito e = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Prerrequisito no encontrado: " + id));
+        Prerrequisito e = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.PRE_REQUISITO_NO_ENCONTRADO + id));
         repository.delete(e);
     }
 
@@ -61,7 +66,7 @@ public class PrerrequisitoServiceImpl implements PrerrequisitoService {
         return repository.findAll()
                 .stream()
                 .map(mapper::toDto)
-                .collect(Collectors.toList());
+                .toList();
     }
 
     public PrerrequisitoDto listarId(Long id) {

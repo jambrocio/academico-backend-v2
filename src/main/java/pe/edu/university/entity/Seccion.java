@@ -11,7 +11,8 @@ import java.time.*;
 @AllArgsConstructor
 @Builder
 public class Seccion {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long seccionId;
 
     @Column(name = "curso_id", insertable = false, updatable = false)
@@ -30,7 +31,14 @@ public class Seccion {
     private java.time.LocalDate fechaFin;
     private OffsetDateTime fechaRegistro;
     private Boolean activo;
-    @PrePersist public void prePersist(){ if(fechaRegistro==null) fechaRegistro=OffsetDateTime.now(); if(activo==null) activo=true; }
+
+    @PrePersist
+    public void prePersist() {
+        if (fechaRegistro == null)
+            fechaRegistro = OffsetDateTime.now();
+        if (activo == null)
+            activo = true;
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "curso_id", nullable = false)

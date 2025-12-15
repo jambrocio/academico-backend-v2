@@ -1,6 +1,5 @@
 package pe.edu.university.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -12,18 +11,23 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/facultads")
-@RequiredArgsConstructor
 public class FacultadController {
 
+    private final FacultadService service;
+
     @Autowired
-    FacultadService service;
+    public FacultadController(FacultadService service) {
+        this.service = service;
+    }
 
     @PostMapping
+    @ValidateToken
     public ResponseEntity<FacultadDto> create(@RequestBody FacultadDto dto) {
         return ResponseEntity.ok(service.create(dto));
     }
 
     @PutMapping("/{id}")
+    @ValidateToken
     public ResponseEntity<FacultadDto> update(@PathVariable Long id, @RequestBody FacultadDto dto) {
         return ResponseEntity.ok(service.update(id, dto));
     }
@@ -34,12 +38,12 @@ public class FacultadController {
     }
 
     @GetMapping
-    @ValidateToken
     public ResponseEntity<List<FacultadDto>> getAll() {
         return ResponseEntity.ok(service.findAll());
     }
 
     @DeleteMapping("/{id}")
+    @ValidateToken
     public ResponseEntity<Void> delete(@PathVariable Long id) {
         service.delete(id);
         return ResponseEntity.noContent().build();

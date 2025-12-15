@@ -1,6 +1,5 @@
 package pe.edu.university.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,20 +9,22 @@ import pe.edu.university.exception.ResourceNotFoundException;
 import pe.edu.university.mapper.FacultadMapper;
 import pe.edu.university.repository.FacultadRepository;
 import pe.edu.university.service.FacultadService;
+import pe.edu.university.util.Constantes;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class FacultadServiceImpl implements FacultadService {
 
-    @Autowired
-    FacultadRepository facultadRepository;
+    private final FacultadRepository facultadRepository;
+    private final FacultadMapper mapper;
 
     @Autowired
-    FacultadMapper mapper;
+    public FacultadServiceImpl(FacultadRepository facultadRepository, FacultadMapper mapper) {
+        this.facultadRepository = facultadRepository;
+        this.mapper = mapper;
+    }
 
     @Override
     public FacultadDto create(FacultadDto dto) {
@@ -34,7 +35,8 @@ public class FacultadServiceImpl implements FacultadService {
 
     @Override
     public FacultadDto update(Long id, FacultadDto dto) {
-        Facultad existing = facultadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Facultad no encontrado: " + id));
+        Facultad existing = facultadRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.FACULTAD_NO_ENCONTRADO + id));
         // simple field updates (mapper could be more advanced)
         Facultad updated = facultadRepository.save(existing);
         return mapper.toDto(updated);
@@ -42,17 +44,19 @@ public class FacultadServiceImpl implements FacultadService {
 
     @Override
     public FacultadDto findById(Long id) {
-        return facultadRepository.findById(id).map(mapper::toDto).orElseThrow(() -> new ResourceNotFoundException("Facultad no encontrado: " + id));
+        return facultadRepository.findById(id).map(mapper::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.FACULTAD_NO_ENCONTRADO + id));
     }
 
     @Override
     public List<FacultadDto> findAll() {
-        return facultadRepository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
+        return facultadRepository.findAll().stream().map(mapper::toDto).toList();
     }
 
     @Override
     public void delete(Long id) {
-        Facultad e = facultadRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Facultad no encontrado: " + id));
+        Facultad e = facultadRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.FACULTAD_NO_ENCONTRADO + id));
         facultadRepository.delete(e);
     }
 }

@@ -1,6 +1,5 @@
 package pe.edu.university.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,23 +11,25 @@ import pe.edu.university.mapper.CarreraMapper;
 import pe.edu.university.repository.CarreraRepository;
 import pe.edu.university.repository.FacultadRepository;
 import pe.edu.university.service.CarreraService;
+import pe.edu.university.util.Constantes;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class CarreraServiceImpl implements CarreraService {
 
-    @Autowired
-    CarreraRepository repository;
+    private final CarreraRepository repository;
+    private final CarreraMapper mapper;
+    private final FacultadRepository facultadRepository;
 
     @Autowired
-    CarreraMapper mapper;
-
-    @Autowired
-    FacultadRepository facultadRepository; // nuevo
+    public CarreraServiceImpl(CarreraRepository repository, CarreraMapper mapper,
+            FacultadRepository facultadRepository) {
+        this.repository = repository;
+        this.mapper = mapper;
+        this.facultadRepository = facultadRepository;
+    }
 
     @Override
     public CarreraDto create(CarreraDto dto) {
@@ -37,7 +38,8 @@ public class CarreraServiceImpl implements CarreraService {
         // Asignar Facultad si se proporcionó facultadId
         if (dto.getFacultadId() != null) {
             Facultad facultad = facultadRepository.findById(dto.getFacultadId())
-                .orElseThrow(() -> new IllegalArgumentException("Facultad no encontrada: " + dto.getFacultadId()));
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            Constantes.FACULTAD_NO_ENCONTRADO + dto.getFacultadId()));
             e.setFacultad(facultad);
         }
 
@@ -47,25 +49,39 @@ public class CarreraServiceImpl implements CarreraService {
 
     @Override
     public CarreraDto update(Long id, CarreraDto dto) {
-        Carrera existing = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Carrera no encontrado: " + id));
-        // simple field updates (mapper could be more advanced)
+        Carrera existing = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.CARRERA_NO_ENCONTRADO + id));
+        if (dto.getNombre() != null)
+            existing.setNombre(dto.getNombre());
+        if (dto.getDuracionSemestres() != null)
+            existing.setDuracionSemestres(dto.getDuracionSemestres());
+
+        if (dto.getFacultadId() != null) {
+            Facultad facultad = facultadRepository.findById(dto.getFacultadId())
+                    .orElseThrow(() -> new IllegalArgumentException(
+                            Constantes.FACULTAD_NO_ENCONTRADO + dto.getFacultadId()));
+            existing.setFacultad(facultad);
+        }
+
         Carrera updated = repository.save(existing);
         return mapper.toDto(updated);
     }
 
     @Override
     public CarreraDto findById(Long id) {
-        return repository.findById(id).map(mapper::toDto).orElseThrow(() -> new ResourceNotFoundException("Carrera no encontrado: " + id));
+        return repository.findById(id).map(mapper::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.CARRERA_NO_ENCONTRADO + id));
     }
 
     @Override
     public List<CarreraDto> findAll() {
-        return repository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
+        return repository.findAll().stream().map(mapper::toDto).toList();
     }
 
     @Override
     public void delete(Long id) {
-        Carrera e = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Carrera no encontrado: " + id));
+        Carrera e = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.CARRERA_NO_ENCONTRADO + id));
         repository.delete(e);
     }
 }

@@ -2,7 +2,7 @@ package pe.edu.university.security;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.beans.factory.annotation.Value;
+
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpMethod;
@@ -23,8 +23,7 @@ public class TokenValidationService {
     // ObjectMapper para parsear respuestas JSON del servicio externo
     private final ObjectMapper objectMapper = new ObjectMapper();
 
-    @Value("${token.validation.url:http://localhost:8082/users/validate-token}")
-    private String tokenValidationUrl;
+    private final TokenValidationProperties tokenValidationProperties;
 
     /**
      * Valida el token consumiendo el servicio externo
@@ -36,15 +35,15 @@ public class TokenValidationService {
         try {
             // Eliminar el prefijo "Bearer " si existe
             String cleanToken = token.replace("Bearer ", "").trim();
-            
+
             // Crear headers con Content-Type JSON
             HttpHeaders headers = new HttpHeaders();
             headers.set("Content-Type", "application/json");
-            
+
             // Crear el cuerpo de la solicitud con el token en JSON
             String requestBody = "{\"token\":\"" + cleanToken + "\"}";
             HttpEntity<String> entity = new HttpEntity<>(requestBody, headers);
-            
+
             // Hacer la solicitud al servicio de validación (POST con body JSON)
             // Loguear token parcial para depuración (no exponer entero)
             String masked = maskToken(cleanToken);
@@ -52,14 +51,14 @@ public class TokenValidationService {
             log.debug("Request body: {}", requestBody);
 
             ResponseEntity<String> response = restTemplate.exchange(
-                    tokenValidationUrl,
+                    tokenValidationProperties.getUrl(),
                     HttpMethod.POST,
                     entity,
-                    String.class
-            );
+                    String.class);
 
             String body = response.getBody();
-            log.debug("Token validation service returned status {} and body: {}", response.getStatusCode().value(), body);
+            log.debug("Token validation service returned status {} and body: {}", response.getStatusCode().value(),
+                    body);
 
             if (response.getStatusCode().is2xxSuccessful() && body != null && !body.isBlank()) {
                 try {
@@ -67,8 +66,10 @@ public class TokenValidationService {
                     log.debug("Parsed validate-token response: {}", dto);
                     return dto.isValid();
                 } catch (JsonProcessingException jpe) {
-                    log.warn("No se pudo parsear la respuesta JSON: {}. Considerando respuesta 2xx como válida.", jpe.getMessage());
-                    // Fallback: si el servicio respondió 2xx pero no devolvió el JSON esperado, considerarlo válido
+                    log.warn("No se pudo parsear la respuesta JSON: {}. Considerando respuesta 2xx como válida.",
+                            jpe.getMessage());
+                    // Fallback: si el servicio respondió 2xx pero no devolvió el JSON esperado,
+                    // considerarlo válido
                     return true;
                 }
             }
@@ -76,7 +77,7 @@ public class TokenValidationService {
             // Si no fue 2xx o cuerpo vacío, no válido
             log.warn("Servicio de validación retornó código {} o cuerpo vacío", response.getStatusCode().value());
             return false;
-            
+
         } catch (RestClientException e) {
             log.error("Error al validar el token con el servicio externo: {}", e.getMessage());
             return false;
@@ -87,15 +88,17 @@ public class TokenValidationService {
     }
 
     /**
-     * Devuelve una versión enmascarada del token para logs (primeros y últimos caracteres)
+     * Devuelve una versión enmascarada del token para logs (primeros y últimos
+     * caracteres)
      */
     private String maskToken(String token) {
-        if (token == null || token.isBlank()) return "<empty>";
+        if (token == null || token.isBlank())
+            return "<empty>";
         int len = token.length();
-        if (len <= 10) return token.replaceAll(".(?=.{4})", "*");
+        if (len <= 10)
+            return token.replaceAll(".(?=.{4})", "*");
         String start = token.substring(0, 6);
         String end = token.substring(len - 4);
         return start + "..." + end;
     }
 }
-

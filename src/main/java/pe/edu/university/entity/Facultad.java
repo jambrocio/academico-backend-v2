@@ -11,7 +11,8 @@ import java.time.*;
 @AllArgsConstructor
 @Builder
 public class Facultad {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long facultadId;
     private String nombre;
     @Column(columnDefinition = "text")
@@ -20,5 +21,12 @@ public class Facultad {
     private String decano;
     private OffsetDateTime fechaRegistro;
     private Boolean activo;
-    @PrePersist public void prePersist(){ if(fechaRegistro==null) fechaRegistro=OffsetDateTime.now(); if(activo==null) activo=true; }
+
+    @PrePersist
+    public void prePersist() {
+        if (fechaRegistro == null)
+            fechaRegistro = OffsetDateTime.now();
+        if (activo == null)
+            activo = true;
+    }
 }

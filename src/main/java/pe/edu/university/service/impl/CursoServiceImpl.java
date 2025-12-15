@@ -1,6 +1,5 @@
 package pe.edu.university.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -12,23 +11,25 @@ import pe.edu.university.mapper.CursoMapper;
 import pe.edu.university.repository.CursoRepository;
 import pe.edu.university.repository.CarreraRepository;
 import pe.edu.university.service.CursoService;
+import pe.edu.university.util.Constantes;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class CursoServiceImpl implements CursoService {
 
-    @Autowired
-    CursoRepository repository;
+    private final CursoRepository repository;
+    private final CursoMapper mapper;
+    private final CarreraRepository carreraRepository;
 
     @Autowired
-    CursoMapper mapper;
-
-    @Autowired
-    CarreraRepository carreraRepository; // nuevo
+    public CursoServiceImpl(CursoRepository repository, CursoMapper mapper,
+            CarreraRepository carreraRepository) {
+        this.repository = repository;
+        this.mapper = mapper;
+        this.carreraRepository = carreraRepository;
+    }
 
     @Override
     public CursoDto create(CursoDto dto) {
@@ -36,7 +37,8 @@ public class CursoServiceImpl implements CursoService {
 
         if (dto.getCarreraId() != null) {
             Carrera carrera = carreraRepository.findById(dto.getCarreraId())
-                .orElseThrow(() -> new IllegalArgumentException("Carrera no encontrada: " + dto.getCarreraId()));
+                    .orElseThrow(
+                            () -> new IllegalArgumentException(Constantes.CARRERA_NO_ENCONTRADO + dto.getCarreraId()));
             entity.setCarrera(carrera);
         }
 
@@ -47,12 +49,13 @@ public class CursoServiceImpl implements CursoService {
     @Override
     public CursoDto update(Long id, CursoDto dto) {
         Curso entity = repository.findById(id)
-            .orElseThrow(() -> new IllegalArgumentException("Curso no encontrado: " + id));
+                .orElseThrow(() -> new IllegalArgumentException(Constantes.CURSO_NO_ENCONTRADO + id));
         mapper.updateEntity(dto, entity);
 
         if (dto.getCarreraId() != null) {
             Carrera carrera = carreraRepository.findById(dto.getCarreraId())
-                .orElseThrow(() -> new IllegalArgumentException("Carrera no encontrada: " + dto.getCarreraId()));
+                    .orElseThrow(
+                            () -> new IllegalArgumentException(Constantes.CARRERA_NO_ENCONTRADO + dto.getCarreraId()));
             entity.setCarrera(carrera);
         }
 
@@ -62,17 +65,19 @@ public class CursoServiceImpl implements CursoService {
 
     @Override
     public CursoDto findById(Long id) {
-        return repository.findById(id).map(mapper::toDto).orElseThrow(() -> new ResourceNotFoundException("Curso no encontrado: " + id));
+        return repository.findById(id).map(mapper::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.CURSO_NO_ENCONTRADO + id));
     }
 
     @Override
     public List<CursoDto> findAll() {
-        return repository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
+        return repository.findAll().stream().map(mapper::toDto).toList();
     }
 
     @Override
     public void delete(Long id) {
-        Curso e = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Curso no encontrado: " + id));
+        Curso e = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.CURSO_NO_ENCONTRADO + id));
         repository.delete(e);
     }
 }

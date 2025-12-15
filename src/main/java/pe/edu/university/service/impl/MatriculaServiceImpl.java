@@ -1,6 +1,5 @@
 package pe.edu.university.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,30 +13,28 @@ import pe.edu.university.repository.EstudianteRepository;
 import pe.edu.university.repository.MatriculaRepository;
 import pe.edu.university.repository.SeccionRepository;
 import pe.edu.university.service.MatriculaService;
-import pe.edu.university.service.ExternalMessageService;
+import pe.edu.university.util.Constantes;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class MatriculaServiceImpl implements MatriculaService {
 
-    @Autowired
-    MatriculaRepository repository;
+    private final MatriculaRepository repository;
+    private final EstudianteRepository estudianteRepository;
+    private final SeccionRepository seccionRepository;
+    private final MatriculaMapper mapper;
 
     @Autowired
-    EstudianteRepository estudianteRepository;
-
-    @Autowired
-    SeccionRepository seccionRepository;
-
-    @Autowired
-    MatriculaMapper mapper;
-
-    @Autowired
-    ExternalMessageService externalMessageService;
+    public MatriculaServiceImpl(MatriculaRepository repository, EstudianteRepository estudianteRepository,
+            SeccionRepository seccionRepository, MatriculaMapper mapper) {
+        this.repository = repository;
+        this.estudianteRepository = estudianteRepository;
+        this.seccionRepository = seccionRepository;
+        this.mapper = mapper;
+    }
 
     @Override
     public MatriculaDto create(MatriculaDto dto) {
@@ -64,18 +61,14 @@ public class MatriculaServiceImpl implements MatriculaService {
         // build complete DTO for response and external service
         MatriculaDto resultDto = mapper.toDto(saved, estudiante);
 
-        // send notification to external service (graceful degradation on failure)
-        externalMessageService.sendMatriculaMessageKafkaCreate(resultDto);
-
-        externalMessageService.sendMatriculaMessageRabbitMq(resultDto);
-
         return resultDto;
     }
 
     @Override
     public MatriculaDto update(Long id, MatriculaDto dto) {
         // load existing
-        Matricula existing = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Matricula no encontrado: " + id));
+        Matricula existing = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.MATRICULA_NO_ENCONTRADO + id));
 
         // update simple fields from DTO
         existing.setFechaMatricula(dto.getFechaMatricula());
@@ -88,7 +81,8 @@ public class MatriculaServiceImpl implements MatriculaService {
         if (dto.getEstudianteId() != null) {
             // try to fetch full Estudiante, otherwise attach a minimal reference
             Estudiante est = estudianteRepository.findByEstudianteId(dto.getEstudianteId());
-            if (est != null) existing.setEstudiante(est);
+            if (est != null)
+                existing.setEstudiante(est);
             else {
                 Estudiante ref = new Estudiante();
                 ref.setEstudianteId(dto.getEstudianteId());
@@ -106,15 +100,18 @@ public class MatriculaServiceImpl implements MatriculaService {
         Matricula updated = repository.save(existing);
 
         Estudiante estudiante = null;
-        if (updated.getEstudiante() != null) estudiante = updated.getEstudiante();
-        else if (updated.getEstudianteId() != null) estudiante = estudianteRepository.findByEstudianteId(updated.getEstudianteId());
+        if (updated.getEstudiante() != null)
+            estudiante = updated.getEstudiante();
+        else if (updated.getEstudianteId() != null)
+            estudiante = estudianteRepository.findByEstudianteId(updated.getEstudianteId());
 
         return mapper.toDto(updated);
     }
 
     @Override
     public MatriculaDto findById(Long id) {
-        Matricula e = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Matricula no encontrado: " + id));
+        Matricula e = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.MATRICULA_NO_ENCONTRADO + id));
         Estudiante estudiante = null;
         if (e.getEstudiante() != null) {
             estudiante = e.getEstudiante();
@@ -134,12 +131,13 @@ public class MatriculaServiceImpl implements MatriculaService {
                 estudiante = estudianteRepository.findByEstudianteId(e.getEstudianteId());
             }
             return mapper.toDto(e);
-        }).collect(Collectors.toList());
+        }).toList();
     }
 
     @Override
     public void delete(Long id) {
-        Matricula e = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Matricula no encontrado: " + id));
+        Matricula e = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.MATRICULA_NO_ENCONTRADO + id));
         repository.delete(e);
     }
 }

@@ -1,6 +1,5 @@
 package pe.edu.university.controller;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -11,11 +10,14 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/pagos")
-@RequiredArgsConstructor
 public class PagoController {
 
+    private final PagoService service;
+
     @Autowired
-    PagoService service;
+    public PagoController(PagoService service) {
+        this.service = service;
+    }
 
     @PostMapping
     public ResponseEntity<PagoDto> create(@RequestBody PagoDto dto) {

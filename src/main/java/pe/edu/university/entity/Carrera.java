@@ -12,7 +12,8 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 public class Carrera {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long carreraId;
 
     @Column(name = "facultad_id", insertable = false, updatable = false)
@@ -26,7 +27,13 @@ public class Carrera {
     private OffsetDateTime fechaRegistro;
     private Boolean activo;
 
-    @PrePersist public void prePersist(){ if(fechaRegistro==null) fechaRegistro=OffsetDateTime.now(); if(activo==null) activo=true; }
+    @PrePersist
+    public void prePersist() {
+        if (fechaRegistro == null)
+            fechaRegistro = OffsetDateTime.now();
+        if (activo == null)
+            activo = true;
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "facultad_id", nullable = false)

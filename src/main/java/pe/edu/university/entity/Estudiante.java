@@ -11,7 +11,8 @@ import java.time.*;
 @AllArgsConstructor
 @Builder
 public class Estudiante {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long estudianteId;
     private String nombre;
     private String apellido;
@@ -22,5 +23,12 @@ public class Estudiante {
     private String direccion;
     private OffsetDateTime fechaRegistro;
     private Boolean activo;
-    @PrePersist public void prePersist(){ if(fechaRegistro==null) fechaRegistro=OffsetDateTime.now(); if(activo==null) activo=true; }
+
+    @PrePersist
+    public void prePersist() {
+        if (fechaRegistro == null)
+            fechaRegistro = OffsetDateTime.now();
+        if (activo == null)
+            activo = true;
+    }
 }

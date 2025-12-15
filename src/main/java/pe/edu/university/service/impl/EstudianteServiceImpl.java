@@ -1,6 +1,5 @@
 package pe.edu.university.service.impl;
 
-import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -10,20 +9,22 @@ import pe.edu.university.exception.ResourceNotFoundException;
 import pe.edu.university.mapper.EstudianteMapper;
 import pe.edu.university.repository.EstudianteRepository;
 import pe.edu.university.service.EstudianteService;
+import pe.edu.university.util.Constantes;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
-@RequiredArgsConstructor
 @Transactional
 public class EstudianteServiceImpl implements EstudianteService {
 
-    @Autowired
-    EstudianteRepository repository;
+    private final EstudianteRepository repository;
+    private final EstudianteMapper mapper;
 
     @Autowired
-    EstudianteMapper mapper;
+    public EstudianteServiceImpl(EstudianteRepository repository, EstudianteMapper mapper) {
+        this.repository = repository;
+        this.mapper = mapper;
+    }
 
     @Override
     public EstudianteDto create(EstudianteDto dto) {
@@ -34,25 +35,36 @@ public class EstudianteServiceImpl implements EstudianteService {
 
     @Override
     public EstudianteDto update(Long id, EstudianteDto dto) {
-        Estudiante existing = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado: " + id));
-        // simple field updates (mapper could be more advanced)
+        Estudiante existing = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.ESTUDIANTE_NO_ENCONTRADO + id));
+        if (dto.getNombre() != null)
+            existing.setNombre(dto.getNombre());
+        if (dto.getApellido() != null)
+            existing.setApellido(dto.getApellido());
+        if (dto.getDni() != null)
+            existing.setDni(dto.getDni());
+        if (dto.getEmail() != null)
+            existing.setEmail(dto.getEmail());
+
         Estudiante updated = repository.save(existing);
         return mapper.toDto(updated);
     }
 
     @Override
     public EstudianteDto findById(Long id) {
-        return repository.findById(id).map(mapper::toDto).orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado: " + id));
+        return repository.findById(id).map(mapper::toDto)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.ESTUDIANTE_NO_ENCONTRADO + id));
     }
 
     @Override
     public List<EstudianteDto> findAll() {
-        return repository.findAll().stream().map(mapper::toDto).collect(Collectors.toList());
+        return repository.findAll().stream().map(mapper::toDto).toList();
     }
 
     @Override
     public void delete(Long id) {
-        Estudiante e = repository.findById(id).orElseThrow(() -> new ResourceNotFoundException("Estudiante no encontrado: " + id));
+        Estudiante e = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(Constantes.ESTUDIANTE_NO_ENCONTRADO + id));
         repository.delete(e);
     }
 }

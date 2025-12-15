@@ -14,7 +14,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 @AllArgsConstructor
 @Builder
 public class Matricula {
-    @Id @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long matriculaId;
 
     @Column(name = "estudiante_id", insertable = false, updatable = false)
@@ -25,7 +26,7 @@ public class Matricula {
 
     @JsonFormat(pattern = "yyyy-MM-dd")
     private LocalDate fechaMatricula;
-    
+
     private String estado;
     private BigDecimal costo;
     private String metodoPago;
@@ -33,7 +34,15 @@ public class Matricula {
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss")
     private LocalDateTime fechaRegistro;
 
-    @PrePersist public void prePersist(){ if(fechaMatricula==null) fechaMatricula=LocalDate.now(); if(fechaRegistro==null) fechaRegistro=LocalDateTime.now(); if(estado==null) estado="PENDIENTE"; }
+    @PrePersist
+    public void prePersist() {
+        if (fechaMatricula == null)
+            fechaMatricula = LocalDate.now();
+        if (fechaRegistro == null)
+            fechaRegistro = LocalDateTime.now();
+        if (estado == null)
+            estado = "PENDIENTE";
+    }
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "estudiante_id", nullable = false)
