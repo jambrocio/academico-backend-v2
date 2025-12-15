@@ -37,7 +37,12 @@ public class FacultadServiceImpl implements FacultadService {
     public FacultadDto update(Long id, FacultadDto dto) {
         Facultad existing = facultadRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(Constantes.FACULTAD_NO_ENCONTRADO + id));
-        // simple field updates (mapper could be more advanced)
+
+        if (dto.getNombre() != null)
+            existing.setNombre(dto.getNombre());
+        if (dto.getDescripcion() != null)
+            existing.setDescripcion(dto.getDescripcion());
+
         Facultad updated = facultadRepository.save(existing);
         return mapper.toDto(updated);
     }
