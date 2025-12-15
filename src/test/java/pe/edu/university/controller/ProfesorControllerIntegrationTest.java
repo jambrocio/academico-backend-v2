@@ -56,6 +56,66 @@ class ProfesorControllerIntegrationTest {
                                 .andExpect(jsonPath("$[*].nombre", containsInAnyOrder("Grace", "Ada")));
         }
 
+        @Test
+        void getProfesorById_ShouldReturnProfesor() throws Exception {
+                String profesorId = createProfesorAndGetId("Isaac", "Newton", "11223355", "isaac@example.com");
+
+                mockMvc.perform(get("/api/profesors/" + profesorId))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.nombre", is("Isaac")))
+                                .andExpect(jsonPath("$.profesorId", is(Integer.parseInt(profesorId))));
+        }
+
+        @Test
+        void updateProfesor_ShouldReturnUpdated() throws Exception {
+                String profesorId = createProfesorAndGetId("Albert", "Einstein", "99887755", "albert@example.com");
+
+                ProfesorDto updateDto = ProfesorDto.builder()
+                                .nombre("Albert Updated")
+                                .apellido("Einstein")
+                                .dni("99887755")
+                                .email("albert.updated@example.com")
+                                .build();
+
+                mockMvc.perform(put("/api/profesors/" + profesorId)
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(updateDto)))
+                                .andExpect(status().isOk())
+                                .andExpect(jsonPath("$.nombre", is("Albert Updated")));
+        }
+
+        @Test
+        void deleteProfesor_ShouldReturnNoContent() throws Exception {
+                String profesorId = createProfesorAndGetId("Marie", "Curie", "33445566", "marie@example.com");
+
+                mockMvc.perform(delete("/api/profesors/" + profesorId))
+                                .andExpect(status().isNoContent());
+
+                mockMvc.perform(get("/api/profesors/" + profesorId))
+                                .andExpect(status().isNotFound());
+        }
+
+        private String createProfesorAndGetId(String nombre, String apellido, String dni, String email)
+                        throws Exception {
+                ProfesorDto dto = ProfesorDto.builder()
+                                .nombre(nombre)
+                                .apellido(apellido)
+                                .dni(dni)
+                                .email(email)
+                                .build();
+
+                String response = mockMvc.perform(post("/api/profesors")
+                                .contentType(MediaType.APPLICATION_JSON)
+                                .content(objectMapper.writeValueAsString(dto)))
+                                .andExpect(status().isOk())
+                                .andReturn()
+                                .getResponse()
+                                .getContentAsString();
+
+                ProfesorDto created = objectMapper.readValue(response, ProfesorDto.class);
+                return created.getProfesorId().toString();
+        }
+
         private void createProfesor(String nombre, String apellido, String dni, String email) throws Exception {
                 ProfesorDto dto = ProfesorDto.builder()
                                 .nombre(nombre)
